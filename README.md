@@ -1,6 +1,6 @@
 # Language-classification
 Classification of various languages based on deep learning approach
-Various language Data is downloaded from youtube. Mainly news channels. Audio without background score is prefered. If certain audio has background score, it can be removed in Audacity
+Various language Data is downloaded from youtube. Mainly news channels. Audio without background score is prefered. If certain audio has background score, it can be removed in Audacity. Data can also be obtained from kaggle https://www.kaggle.com/toponowicz/spoken-language-identification
 
 Data is further preprocessed. Channel set to mono. sampling rate preffered = 44100 (can be changed) silence clipped. Each audio sample is taken as 10 sec (can be changed in data preprocesssing code)
 
