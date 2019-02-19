@@ -153,139 +153,124 @@ name=time.time()
    
         # start Recording
         
-def main():
-	stopped = threading.Event()
-	q = Queue(maxsize=int(round(BUF_MAX_SIZE / CHUNK_SIZE)))
-
-	listen_t = threading.Thread(target=listen, args=(stopped, q))
-	listen_t.start()
-	record_t = threading.Thread(target=record, args=(stopped, q))
-	record_t.start()
-
-	try:
-		
-		while 1:
-			listen_t.join(0.1)
-			record_t.join(0.1)
-			#print ("After record")
-	except KeyboardInterrupt:
-		stopped.set()
-
-	listen_t.join()
-	record_t.join()
+try:
+    while(1) :
 
 
-def record(stopped, q):
-	try:
-		while (1):
-			#print("here")
-			if stopped.wait(timeout=0):
-				break
-			
-			#    break
-			chunk = q.get()
-			vol = max(chunk)
-			print("please speak for 12 seconds without pauses")
-			#print ("Volume",vol)
-			if vol > MIN_VOLUME:
-			
-				print ("recording...")
-			
-				stream = audio.open(format=FORMAT, channels=CHANNELS,
-							rate=RATE, input=True,
-							rames_per_buffer=CHUNK)
+        print("please speak for 12 seconds without pauses")
+        # start Recording
+        print ("recording...")
+        stream = audio.open(format=FORMAT, channels=CHANNELS,
+                        rate=RATE, input=True,
+                        frames_per_buffer=CHUNK)
 
-				frames = []
-				
-				for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-					data = stream.read(CHUNK)
-					frames.append(data)
-				print ("finished recording")
+        frames = []
 
-				start = time.time() #Start Timing
+        for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+            data = stream.read(CHUNK)
+            frames.append(data)
+            #print data
+        print ("finished recording")
 
-				stream.stop_stream()
-				stream.close()
-				audio.terminate()
-			 	#a = str(time.time())
+        start = time.time() #Start Timing
 
-				waveFile = wave.open("path to save/1.wav", 'wb')
-				waveFile.setnchannels(CHANNELS)
-				waveFile.setsampwidth(audio.get_sample_size(FORMAT))
-				waveFile.setframerate(RATE)
-				waveFile.writeframes(b''.join(frames))
-				waveFile.close()
-				#break
-				#print ("Returning")
-				clip = AudioSegment.from_wav("path to save/recorded_files/1.wav")
-				clip = clip.set_frame_rate(44100)
-				for i in range(0, int(clip.duration_seconds*1000-10000), 10000):
-					chunks = clip[i:i+10000]
-					chunks.export("path to save/1_Chunked.wav", format="wav")  
-				wavfile = "path to save/recorded_files/1_Chunked.wav" 
-				plotstft(wavfile, name="path to save/recorded_files/1_Spectrogram.png", alpha=1.0)
-				file_path = "path to save/recorded_files/1_Spectrogram.png"
+        stream.stop_stream()
+        stream.close()
+        audio.terminate()
+        a = str(time.time())
 
-				img = cv2.imread(file_path, 0)
-				imgs = img
+        waveFile = wave.open("/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1.wav", 'wb')
+        waveFile.setnchannels(CHANNELS)
+        waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+        waveFile.setframerate(RATE)
+        waveFile.writeframes(b''.join(frames))
+        waveFile.close()
 
 
-				imgs = imgs.reshape(1,IMAGE_WIDTH, IMAGE_HEIGHT)
+        # In[9]:
+
+        #sound_file = AudioSegment.from_wav("/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1.wav")
+        #audio_chunks = split_on_silence(sound_file, min_silence_len=500, silence_thresh = sound_file.dBFS-3)
+        #if audio_chunks != None:
+            #clip = audio_chunks[0][0:110]
+            #for i, chunk in enumerate(audio_chunks):
+                #clip = clip.append(chunk)
+            #clip.set_frame_rate(44100)
+            #clip.export("/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1_Scilence.wav", format="wav")
+
+
+        # In[10]:
+
+        clip = AudioSegment.from_wav("/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1.wav")
+        clip = clip.set_frame_rate(44100)
+        for i in range(0, int(clip.duration_seconds*1000-10000), 10000):
+            chunks = clip[i:i+10000]
+            chunks.export("/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1_Chunked.wav", format="wav")  
+
+
+        # In[11]:
+
+
+        wavfile = "/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1_Chunked.wav" 
+                   
+        plotstft(wavfile, name="/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1_Spectrogram.png", alpha=1.0)
+                   
+
+        # In[12]:
+
+        file_path = "/home/telxsi.com/snigdha.n/Desktop/for_release/recorded_files/1_Spectrogram.png"
+
+
+        # In[13]:
+
+        img = cv2.imread(file_path, 0)
+        imgs = img
+
+
+        imgs = imgs.reshape(1,IMAGE_WIDTH, IMAGE_HEIGHT)
+            
+
+
+        # In[14]:
+
+        classes = ['english','japanese','mandarin'] 
+        num_classes = len(classes)
+        #print "Total output classes: ", num_classes
+
+        per_class_samples = [0] * num_classes
+
+
+        # In[15]:
+
+        print (classes)
+        probabilities=model.predict(imgs)
+        stop = time.time() #Stop Timing
+        sorted_prob_idxs = (-probabilities).argsort()[0]
+        predicted_prob = np.amax(probabilities)
+        predicted_probs.append(predicted_prob)
+        predicted_class = classes[sorted_prob_idxs[0]]
+        predicted_classes.append(predicted_class)
+        # In[16]:
 
 
 
 
 
-				classes = ['english','french','german'] # change it to what ever languge is your class
-				num_classes = len(classes)
+        print (probabilities)
 
 
-				per_class_samples = [0] * num_classes
+        # In[ ]:
+
+        print(predicted_class)
+        print "Time Taken : ",stop - start
+        print "Do you want to speak again ? Press y or n :"
+        status = raw_input()
+        if (status =="n"):
+            print "Program Exited"
+            quit()
 
 
+except KeyboardInterrupt:
+    quit()     # In[ ]:
 
 
-				print (classes)
-				probabilities=model.predict(imgs)
-				stop = time.time() #Stop Timing
-				sorted_prob_idxs = (-probabilities).argsort()[0]
-				predicted_prob = np.amax(probabilities)
-				predicted_probs.append(predicted_prob)
-				predicted_class = classes[sorted_prob_idxs[0]]
-				predicted_classes.append(predicted_class)
-				print (probabilities)
-
-
-				# In[ ]:
-
-				print(predicted_class)
-				print "Time Taken : ",stop - start
-				print "Do you want to speak again ? Press y or n :"
-				status = raw_input()
-				if (status =="n"):
-					print "Program Exited"
-					quit()
-
-
-def listen(stopped,q):
-
-	stream = pyaudio.PyAudio().open(format=pyaudio.paInt16,channels=1,rate=44100,input=True,frames_per_buffer=1024)
-	while True:
-		if stopped.wait(timeout=0):
-			break
-		try:
-			q.put(array('h', stream.read(CHUNK_SIZE)))
-		except Full:
-			pass
-
-
-if __name__ == '__main__':
-	main()
-
-
-	
-
-
- 					   
-
-       
