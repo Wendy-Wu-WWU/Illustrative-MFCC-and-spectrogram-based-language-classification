@@ -12,4 +12,4 @@ Class1 :
 1_name1.jpg , 1_name2.jpg , 1_name3.jpg
 and so on
 There the 3 different architecture in training code. The sutaible architecture can be selected
-Model can be tested in live environment using testor code. The feature extractor and preprocessing should be same while training and testing.. Should be changed accordingly.
+Model can be tested in live environment using testor code. Dont forget to connect a microphone while testing The feature extractor and preprocessing should be same while training and testing.. Should be changed accordingly.
